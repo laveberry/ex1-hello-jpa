@@ -8,8 +8,25 @@ import java.util.Date;
 
 @Entity
 //@Table(name = "MBR") //다른 테이블 이름 매핑
+@SequenceGenerator( //시퀀스 전략
+        name = "MEMBER_SEQ_GENERATOR",
+        sequenceName = "MEMBER_SEQ", //매핑할 시퀀스 이름
+        initialValue = 1, //1부터 시작
+        allocationSize = 50 //증가값. default 50
+)
+@TableGenerator(name = "MEMBER_SEQ_GENERATOR", //테이블 전략
+        table = "MY_SEQUENCES",
+        pkColumnValue = "MEMBER_SEQ", allocationSize = 1)
 public class Member {
-    @Id
+    /*
+    기본키 매핑
+    AUTO : 자동생성
+    IDENTITY : DB에 위임, insert쿼리 실행되야 id 알수있어서 우선실행
+    SEQUENCE : 주로 오라클, Long 권장, 한번에 실행 가능
+    * */
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                    generator = "MEMBER_SEQ_GENERATOR")
+    @Id //직접 아이디 세팅할때는 이거만 사용
     private Long id;
     @Column(name = "name", unique = true, length = 10, insertable = true, updatable = false, nullable = false)
     private String username;
