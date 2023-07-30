@@ -81,16 +81,25 @@ public class JpaMain {
             //영속성 컨텍스트, 커밋 시점 확인 END=================================
 
 
-            Member member3 = new Member(200L, "member200");
-            em.persist(member3);
-            /*
-            플러시
-            - 영속성 컨텍스트 비우지 않음
-            - 영속성 컨텍스트 변경내용을 db에 동기화
-           //커밋 반영전에 미리 실행하고 싶을때 플러시 사용
-            * */
-            em.flush();
-            System.out.println("==========플러시 시점 확인===========");
+//            Member member3 = new Member(200L, "member200");
+//            em.persist(member3);
+//            /*
+//            플러시
+//            - 영속성 컨텍스트 비우지 않음
+//            - 영속성 컨텍스트 변경내용을 db에 동기화
+//           //커밋 반영전에 미리 실행하고 싶을때 플러시 사용
+//            * */
+//            em.flush();
+//            System.out.println("==========플러시 시점 확인===========");
+
+            Member findMember = em.find(Member.class, 150L);
+//            findMember.setName("AAAAA");
+            //detach 준영속 : 특정 엔티티만 준영속 상태로
+            em.detach(findMember);
+            //clear : 엔티티 매니저안의 영속성 컨텍스트 초기화
+            em.clear();
+            // close : 영속성 컨텍스트 종료
+            em.close();
 
             //이순간 db에 insert sql 작동됨
             //플러시 자동 호출
