@@ -9,6 +9,16 @@ public class Member {
     private Long id;
     private String name;
 
+    //기본 생성자 필요
+    public Member() {
+    }
+
+    //생성자 생성
+    public Member(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

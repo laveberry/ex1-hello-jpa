@@ -50,7 +50,38 @@ public class JpaMain {
 //                System.out.println("member.name = " + member.getName());
 //            }
 
+
+
+            //1차 캐시 START==============================
+            //조회 후 1차 캐시 저장
+            Member findMember = em.find(Member.class, 100L);
+            //조회 시 1차 캐시 조회(쿼리 실행안됨)
+            Member findMember2 = em.find(Member.class, 100L);
+
+            System.out.println("find id => "+ findMember2.getId());
+            System.out.println("find name => " + findMember2.getName());
+            //영속 엔티티 동일성 보장됨
+            System.out.println("result => " + (findMember == findMember2)); //true
+            //1차 캐시 END==============================
+
+
+            //영속성 컨텍스트, 커밋 시점 확인 START=================================
+            //영속성 컨텍스트에 저장
+            Member member1 = new Member(150L, "A");
+            Member member2 = new Member(160L, "B");
+
+            em.persist(member1);
+            em.persist(member2);
+            System.out.println("==========인서트쿼리 실행시점 확인===========");
+//
+            em.find(Member.class, 150L);
+            //자동 변경 감지 기능(자바 컬렉션 처럼)
+            findMember.setName("ZZZZ");
+            System.out.println("==========업데이트 쿼리 실행시점 확인===========");
+//            //이순간 db에 insert sql 작동됨
             tx.commit();
+            //영속성 컨텍스트, 커밋 시점 확인 END=================================
+
         }catch (Exception e){
             tx.rollback();
         }finally {
