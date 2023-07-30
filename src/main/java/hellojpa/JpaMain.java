@@ -92,17 +92,40 @@ public class JpaMain {
 //            em.flush();
 //            System.out.println("==========플러시 시점 확인===========");
 
-            Member findMember = em.find(Member.class, 150L);
-//            findMember.setName("AAAAA");
-            //detach 준영속 : 특정 엔티티만 준영속 상태로
-            em.detach(findMember);
-            //clear : 엔티티 매니저안의 영속성 컨텍스트 초기화
-            em.clear();
-            // close : 영속성 컨텍스트 종료
-            em.close();
+//            Member findMember = em.find(Member.class, 150L);
+////            findMember.setName("AAAAA");
+//            //detach 준영속 : 특정 엔티티만 준영속 상태로
+//            em.detach(findMember);
+//            //clear : 엔티티 매니저안의 영속성 컨텍스트 초기화
+//            em.clear();
+//            // close : 영속성 컨텍스트 종료
+//            em.close();
+//
+//            //이순간 db에 insert sql 작동됨
+//            //플러시 자동 호출
+//            tx.commit();
 
-            //이순간 db에 insert sql 작동됨
-            //플러시 자동 호출
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setName("member1");
+            member.setTeam(team);
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            Member findMember = em.find(Member.class, member.getId());
+            Team findTeam = findMember.getTeam();
+            System.out.println("findTeam => " + findTeam.getName());
+
+            //팀 바꾸고 싶을때
+            Team newTeam = em.find(Team.class, 100L);
+            findMember.setTeam(newTeam);
+
             tx.commit();
 
         }catch (Exception e){

@@ -27,9 +27,18 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
                     generator = "MEMBER_SEQ_GENERATOR")
     @Id //직접 아이디 세팅할때는 이거만 사용
+    @Column(name = "MEMBER_ID")
     private Long id;
-    @Column(name = "name", unique = true, length = 10, insertable = true, updatable = false, nullable = false)
+    @Column(name = "NAME", unique = true, length = 10, insertable = true, updatable = false, nullable = false)
     private String username;
+
+//    @Column(name = "TEAM_ID")
+//    private Long teamId;
+
+    @ManyToOne(fetch = FetchType.LAZY) //LAZY : 쿼리 분리해서 나감
+    @JoinColumn(name = "TEAM_ID")
+    private Team team;
+
     //BigDecimal : 큰 숫자일때
     private BigDecimal age;
     //enum타입 사용 원할때
@@ -75,5 +84,13 @@ public class Member {
 
     public void setName(String name) {
         this.username = name;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }
