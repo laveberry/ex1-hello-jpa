@@ -18,12 +18,20 @@ public class JpaMain {
         try{
             //실제 코드 작성 부분
 
-            //생성
-//            Member member = new Member();
-//            member.setId(2L); //L : long타입 표시
-//            member.setName("HelloB");
+            //비영속
+            Member member = new Member();
+            member.setId(100L); //L : long타입 표시
+            member.setName("HelloJPA");
 
-//            em.persist(member);
+            System.out.println("=== before === ");
+            //영속
+            em.persist(member);
+            System.out.println("=== after ===");
+
+            //준영속 : 회원 엔티티를 영속성 컨텍스트에서 분리
+//            em.detach(member);
+            //삭제 : 객체 삭제
+//            em.remove(member);
 
 //            Member findMember = em.find(Member.class, 1L);
 
@@ -33,14 +41,14 @@ public class JpaMain {
 //            findMember.setName("HelloJPA");
 
             //JPQL
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(5) //페이징 가능
-                    .setMaxResults(8)
-                    .getResultList();
-
-            for(Member member : result){
-                System.out.println("member.name = " + member.getName());
-            }
+//            List<Member> result = em.createQuery("select m from Member as m", Member.class)
+//                    .setFirstResult(5) //페이징 가능
+//                    .setMaxResults(8)
+//                    .getResultList();
+//
+//            for(Member member : result){
+//                System.out.println("member.name = " + member.getName());
+//            }
 
             tx.commit();
         }catch (Exception e){
