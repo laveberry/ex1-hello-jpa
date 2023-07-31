@@ -35,6 +35,7 @@ public class Member {
 //    @Column(name = "TEAM_ID")
 //    private Long teamId;
 
+    //양방향 매핑의 주인
     @ManyToOne(fetch = FetchType.LAZY) //LAZY : 쿼리 분리해서 나감
     @JoinColumn(name = "TEAM_ID")
     private Team team;

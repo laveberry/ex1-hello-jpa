@@ -115,16 +115,28 @@ public class JpaMain {
 
             em.persist(member);
 
+            //이거 해줘야 db에서 값을 깔끔하게 가져옴
             em.flush();
             em.clear();
 
             Member findMember = em.find(Member.class, member.getId());
-            Team findTeam = findMember.getTeam();
-            System.out.println("findTeam => " + findTeam.getName());
+            ////단방향 연관관계 /////
+//            Team findTeam = findMember.getTeam();
+//            System.out.println("findTeam => " + findTeam.getName());
+//
+//            //팀 바꾸고 싶을때
+//            Team newTeam = em.find(Team.class, 100L);
+//            findMember.setTeam(newTeam);
+            ////단방향 연관관계 끝/////
 
-            //팀 바꾸고 싶을때
-            Team newTeam = em.find(Team.class, 100L);
-            findMember.setTeam(newTeam);
+
+            ////양방향 연관관계 //////
+            List<Member> members = findMember.getTeam().getMembers();
+
+            for(Member m : members) {
+                System.out.println("m = " + m.getName());
+            }
+            ////양방향 연관관계 끝//////
 
             tx.commit();
 
