@@ -26,6 +26,11 @@ public class Team {
     @OneToMany(mappedBy = "team") //양방향 매핑 주인x - 읽기만 가능
     private List<Member> members = new ArrayList<>(); //NPE 예방을 위해 ArrayList 로 초기화가 관례
 
+    //양방향 값추가 둘중 하나만 하면됨
+//    public void addMember(Member member){
+//        member.setTeam(this);
+//        members.add(member);
+//    }
     public Long getId() {
         return id;
     }
@@ -49,4 +54,6 @@ public class Team {
     public void setMembers(List<Member> members) {
         this.members = members;
     }
+
+    //toString 양방향 매핑 주의
 }

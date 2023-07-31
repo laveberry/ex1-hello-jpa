@@ -94,4 +94,20 @@ public class Member {
     public void setTeam(Team team) {
         this.team = team;
     }
+
+    public void changeTeam(Team team) {
+        this.team = team;
+        //주인 set 할때 연관관계 양방항 세팅으로 오류방지!!!
+        team.getMembers().add(this);
+    }
+
+    //이렇게 양방향 toString 조심할것!!! toString(), lombok, JSON생성 라이브러리
+//    @Override
+//    public String toString() {
+//        return "Member{" +
+//                "id=" + id +
+//                ", username='" + username + '\'' +
+//                ", team=" + team +
+//                '}';
+//    }
 }

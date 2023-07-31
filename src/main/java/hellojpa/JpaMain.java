@@ -105,21 +105,21 @@ public class JpaMain {
 //            //플러시 자동 호출
 //            tx.commit();
 
-            Team team = new Team();
-            team.setName("TeamA");
-            em.persist(team);
-
-            Member member = new Member();
-            member.setName("member1");
-            member.setTeam(team);
-
-            em.persist(member);
-
-            //이거 해줘야 db에서 값을 깔끔하게 가져옴
-            em.flush();
-            em.clear();
-
-            Member findMember = em.find(Member.class, member.getId());
+//            Team team = new Team();
+//            team.setName("TeamA");
+//            em.persist(team);
+//
+//            Member member = new Member();
+//            member.setName("member1");
+//            member.setTeam(team);
+//
+//            em.persist(member);
+//
+//            //이거 해줘야 db에서 값을 깔끔하게 가져옴
+//            em.flush();
+//            em.clear();
+//
+//            Member findMember = em.find(Member.class, member.getId());
             ////단방향 연관관계 /////
 //            Team findTeam = findMember.getTeam();
 //            System.out.println("findTeam => " + findTeam.getName());
@@ -131,12 +131,45 @@ public class JpaMain {
 
 
             ////양방향 연관관계 //////
-            List<Member> members = findMember.getTeam().getMembers();
+//            List<Member> members = findMember.getTeam().getMembers();
+//
+//            for(Member m : members) {
+//                System.out.println("m = " + m.getName());
+//            }
+            ////양방향 연관관계 끝//////
 
-            for(Member m : members) {
+            Team team = new Team();
+            team.setName("TeamA");
+            //역방향(주인아닌)만 연관관계 설정시 teamId 값이 null이 됨
+//            team.getMembers().add(member);
+            em.persist(team);//**1
+
+            Member member = new Member();
+            member.setName("member1");
+            //연관관계 주인에  값 넣기
+//            member.setTeam(team);
+            member.changeTeam(team);//이 안에서 양방향 세팅 진행
+            em.persist(member);
+
+            /*순수 객체 상태 생각해 항상 양쪽 값 세팅 해줄것
+            양방향 연관관계는 값을 두개 다 세팅 해 주는게 좋음! 아니면 flush clear 선 진행 해줘야함!
+            주인 set할때 적용이 좋은방법! Memeber team setter(changeTeam) 확인할것 */
+//            team.getMembers().add(member);//**2
+
+            //양방향 세팅 요렇게 해도됨 둘중 하나만 하면됨
+//            team.addMember(member);
+
+//            em.flush();
+//            em.clear();
+
+            //flush, clear 하지 않고 두개다 넣지 않으면 조회가 정상작동 안함. 그러니 두개 다 할당해주어야함
+            Team findTeam = em.find(Team.class, team.getId()); //1차 캐시
+            List<Member> members = findTeam.getMembers();
+
+            System.out.println("=====================");
+            for(Member m : members){
                 System.out.println("m = " + m.getName());
             }
-            ////양방향 연관관계 끝//////
 
             tx.commit();
 
