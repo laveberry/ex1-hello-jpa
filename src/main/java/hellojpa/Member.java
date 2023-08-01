@@ -42,6 +42,11 @@ public class Member {
     @ManyToOne @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) //1:N에서 양방향 하고싶을때. 읽기전용으로 세팅. 되도록 실무사용xxx
     private Team team;
 
+    //1:1 관계
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
     //BigDecimal : 큰 숫자일때
     private BigDecimal age;
     //enum타입 사용 원할때
