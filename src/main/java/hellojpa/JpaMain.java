@@ -174,18 +174,37 @@ public class JpaMain {
 
 
             //[1:N] 일대다 시작////
-            Member member = new Member();
-            member.setName("member1");
-
-            em.persist(member);
-
-            Team team = new Team();
-            team.setName("teamA");
-            //이부분 애매함. 업데이트 쿼리 한번 더 나가야함
-            team.getMembers().add(member);
-
-            em.persist(team);
+//            Member member = new Member();
+//            member.setName("member1");
+//
+//            em.persist(member);
+//
+//            Team team = new Team();
+//            team.setName("teamA");
+//            //이부분 애매함. 업데이트 쿼리 한번 더 나가야함
+//            team.getMembers().add(member);
+//
+//            em.persist(team);
             ////일대다 끝////
+
+            ///상속 조인전략 시작////
+            Movie movie = new Movie();
+            movie.setDirector("이준익");
+            movie.setActor("안효섭");
+            movie.setName("스타트업");
+            movie.setPrice(10000);
+
+            em.persist(movie);
+
+            em.flush();
+            em.clear();
+
+            Movie findMovie = em.find(Movie.class, movie.getId());
+            //부모타입으로 조회시 TABLE_PER_CLASS일때 유니온올로 다 연결되서 비효율
+            Item findIem = em.find(Item.class, movie.getId());
+
+            System.out.println("findMove => " + findMovie);
+            System.out.println("findItem => " + findIem);
 
             tx.commit();
 
