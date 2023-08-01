@@ -138,18 +138,18 @@ public class JpaMain {
 //            }
             ////양방향 연관관계 끝//////
 
-            Team team = new Team();
-            team.setName("TeamA");
-            //역방향(주인아닌)만 연관관계 설정시 teamId 값이 null이 됨
-//            team.getMembers().add(member);
-            em.persist(team);//**1
-
-            Member member = new Member();
-            member.setName("member1");
-            //연관관계 주인에  값 넣기
-//            member.setTeam(team);
-            member.changeTeam(team);//이 안에서 양방향 세팅 진행
-            em.persist(member);
+//            Team team = new Team();
+//            team.setName("TeamA");
+//            //역방향(주인아닌)만 연관관계 설정시 teamId 값이 null이 됨
+////            team.getMembers().add(member);
+//            em.persist(team);//**1
+//
+//            Member member = new Member();
+//            member.setName("member1");
+//            //연관관계 주인에  값 넣기
+////            member.setTeam(team);
+//            member.changeTeam(team);//이 안에서 양방향 세팅 진행
+//            em.persist(member);
 
             /*순수 객체 상태 생각해 항상 양쪽 값 세팅 해줄것
             양방향 연관관계는 값을 두개 다 세팅 해 주는게 좋음! 아니면 flush clear 선 진행 해줘야함!
@@ -163,13 +163,29 @@ public class JpaMain {
 //            em.clear();
 
             //flush, clear 하지 않고 두개다 넣지 않으면 조회가 정상작동 안함. 그러니 두개 다 할당해주어야함
-            Team findTeam = em.find(Team.class, team.getId()); //1차 캐시
-            List<Member> members = findTeam.getMembers();
+//            Team findTeam = em.find(Team.class, team.getId()); //1차 캐시
+//            List<Member> members = findTeam.getMembers();
+//
+//            System.out.println("=====================");
+//            for(Member m : members){
+//                System.out.println("m = " + m.getName());
+//            }
+            ///[N:1] 다대일 끝////
 
-            System.out.println("=====================");
-            for(Member m : members){
-                System.out.println("m = " + m.getName());
-            }
+
+            //[1:N] 일대다 시작////
+            Member member = new Member();
+            member.setName("member1");
+
+            em.persist(member);
+
+            Team team = new Team();
+            team.setName("teamA");
+            //이부분 애매함. 업데이트 쿼리 한번 더 나가야함
+            team.getMembers().add(member);
+
+            em.persist(team);
+            ////일대다 끝////
 
             tx.commit();
 

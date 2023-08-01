@@ -36,8 +36,10 @@ public class Member {
 //    private Long teamId;
 
     //양방향 매핑의 주인
-    @ManyToOne(fetch = FetchType.LAZY) //LAZY : 쿼리 분리해서 나감
-    @JoinColumn(name = "TEAM_ID")
+    //다대일 N : 1 , N이 주인
+//    @ManyToOne(fetch = FetchType.LAZY) //LAZY : 쿼리 분리해서 나감
+//    @JoinColumn(name = "TEAM_ID")
+    @ManyToOne @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) //1:N에서 양방향 하고싶을때. 읽기전용으로 세팅. 되도록 실무사용xxx
     private Team team;
 
     //BigDecimal : 큰 숫자일때

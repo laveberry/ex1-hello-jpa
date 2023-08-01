@@ -23,7 +23,8 @@ public class Team {
     - 주인은 외래키가 있는곳을 주인으로 지정, 왜냐면 PK가 있는곳 insert시 다른테이블 값이 update되어 곤란해질수 있고 성능이슈
     - 1:N -> db의 n쪽이 연관관계 주인이됨! 자동차와 바퀴 중 바퀴가 연관관계 주인
     * */
-    @OneToMany(mappedBy = "team") //양방향 매핑 주인x - 읽기만 가능
+//    @OneToMany(mappedBy = "team") //양방향 매핑 주인x - 읽기만 가능
+    @OneToMany @JoinColumn(name = "TEMA_ID") //일대다[1:N] - N에 외래키 있음. JoinColumn 항상 써줘야함. 사용안하면 중간테이블 생성됨. 추천안함
     private List<Member> members = new ArrayList<>(); //NPE 예방을 위해 ArrayList 로 초기화가 관례
 
     //양방향 값추가 둘중 하나만 하면됨
