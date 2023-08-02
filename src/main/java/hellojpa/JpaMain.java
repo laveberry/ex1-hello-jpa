@@ -1,5 +1,7 @@
 package hellojpa;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -189,37 +191,110 @@ public class JpaMain {
             ////일대다 끝////
 
             ///상속 조인전략 시작////
-            Movie movie = new Movie();
-            movie.setDirector("이준익");
-            movie.setActor("안효섭");
-            movie.setName("스타트업");
-            movie.setPrice(10000);
+//            Movie movie = new Movie();
+//            movie.setDirector("이준익");
+//            movie.setActor("안효섭");
+//            movie.setName("스타트업");
+//            movie.setPrice(10000);
+//
+//            em.persist(movie);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Movie findMovie = em.find(Movie.class, movie.getId());
+//            //부모타입으로 조회시 TABLE_PER_CLASS일때 유니온올로 다 연결되서 비효율
+//            Item findIem = em.find(Item.class, movie.getId());
+//
+//            System.out.println("findMove => " + findMovie);
+//            System.out.println("findItem => " + findIem);
+//
+//            Member member = new Member();
+//            member.setName("user1");
+//            member.setCreateBy("kim");
+//            member.setCreatedDate(LocalDateTime.now());
 
-            em.persist(movie);
+
+            ///프록시 시작
+//            Member member1 = em.find(Member.class, 1L);
+////            printMember(member1);
+//            printMemberAndTeam(member1);
+
+            Member member = new Member();
+            member.setName("member1");
+            em.persist(member);
+
+            Member member2 = new Member();
+            member2.setName("member2");
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            Movie findMovie = em.find(Movie.class, movie.getId());
-            //부모타입으로 조회시 TABLE_PER_CLASS일때 유니온올로 다 연결되서 비효율
-            Item findIem = em.find(Item.class, movie.getId());
+            Member m1 = em.find(Member.class, member.getId());
+//            Member m2 = em.find(Member.class, member2.getId());
+            Member m2 = em.getReference(Member.class, member2.getId());
+            //타입비교 : find이용시 true, getReference와 비교시 ture
+            System.out.println("m1 == m2" + (m1.getClass() == m2.getClass()));
 
-            System.out.println("findMove => " + findMovie);
-            System.out.println("findItem => " + findIem);
+            //타입체크 예시 메소드
+            logic(m1, m2);
 
-            Member member = new Member();
-            member.setName("user1");
-            member.setCreateBy("kim");
-            member.setCreatedDate(LocalDateTime.now());
+            //둘다 값 같음
+            System.out.println("m1 = " + m1.getClass());
+            Member reference = em.getReference(Member.class, member.getId());
+            System.out.println("reference = " + reference.getClass());
+            //pk가 같으면 jpa는 항상 트루?
+            System.out.println("a == a : " + (m1 == reference)); //true
+
+            //영속성컨텍스트 제거하여, ref 초기화시 에러남.
+//            em.detach(m2);
+//            em.close();
+
+//            System.out.println("프록시 초기화 -> " + m2.getName());
+
+            //프록시 초기화여부 확인
+            System.out.println("isLoaded => " + emf.getPersistenceUnitUtil().isLoaded(m2));
+
+            Hibernate.initialize(m2);//강제 초기화
+
+            /*
+            getReference 실제 사용시점에서 호출됨.
+            가짜(프록시)엔티티 객체 조회
+            * */
+//            Member findMember = em.getReference(Member.class, member.getId());
+//            System.out.println("beford findMember  =>  " + findMember.getClass());
+//            System.out.println("findMember.id   " + findMember.getId());
+//            System.out.println("findMember.username   " + findMember.getName());
+//            System.out.println("after findMember  =>  " + findMember.getClass());
+
+            //
 
             tx.commit();
 
         }catch (Exception e){
             tx.rollback();
+            e.printStackTrace();
         }finally {
             //항상 닫아줘야함
             em.close();
         }
         emf.close();
+    }
+
+    private static void logic(Member m1, Member m2) {
+        //m1, m2 가 실제일지 프록시로 넘어올지 알수 없으니 타입비교 절대 ==로 하면안됨!
+        System.out.println("logic m1 == m2" + (m1.getClass() == m2.getClass()));//x
+        System.out.println("m1 instanceof  =>  " + (m1 instanceof Member));
+        System.out.println("m2 instanceof  =>  " + (m2 instanceof Member));
+
+    }
+
+    private static void printMemberAndTeam(Member member) {
+        String username = member.getName();
+        System.out.println("username = " + username);
+
+        Team team = member.getTeam();
+        System.out.println("team = " + team.getName());
     }
 }

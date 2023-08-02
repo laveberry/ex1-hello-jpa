@@ -45,15 +45,15 @@ public class Member extends BaseEntity{
     private Team team;
 
     //1:1 관계
-    @OneToOne
-    @JoinColumn(name = "LOCKER_ID")
-    private Locker locker;
-
-    //N:M(실무는 사용하지마시오)
-    @ManyToMany // 사용xxx
-    @JoinTable(name = "MEMBER_PRODUCT")
-    private List<Product> products = new ArrayList<>();
-
+//    @OneToOne
+//    @JoinColumn(name = "LOCKER_ID")
+//    private Locker locker;
+//
+//    //N:M(실무는 사용하지마시오)
+//    @ManyToMany // 사용xxx
+//    @JoinTable(name = "MEMBER_PRODUCT")
+//    private List<Product> products = new ArrayList<>();
+//
     //N:M 중간테이블 생성
     @OneToMany(mappedBy = "member")
     private List<MemberProduct> memberProducts = new ArrayList<>();
