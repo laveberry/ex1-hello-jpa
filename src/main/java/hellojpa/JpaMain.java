@@ -1,6 +1,7 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -205,6 +206,11 @@ public class JpaMain {
 
             System.out.println("findMove => " + findMovie);
             System.out.println("findItem => " + findIem);
+
+            Member member = new Member();
+            member.setName("user1");
+            member.setCreateBy("kim");
+            member.setCreatedDate(LocalDateTime.now());
 
             tx.commit();
 

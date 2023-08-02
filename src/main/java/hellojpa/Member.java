@@ -19,7 +19,7 @@ import java.util.List;
 @TableGenerator(name = "MEMBER_SEQ_GENERATOR", //테이블 전략
         table = "MY_SEQUENCES",
         pkColumnValue = "MEMBER_SEQ", allocationSize = 1)
-public class Member {
+public class Member extends BaseEntity{
     /*
     기본키 매핑
     AUTO : 자동생성
