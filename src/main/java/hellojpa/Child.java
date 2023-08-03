@@ -1,6 +1,10 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Child {
@@ -8,6 +12,8 @@ public class Child {
     @GeneratedValue
     private Long id;
     private String name;
+    @Embedded
+    private Address homeAddress;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -333,7 +334,7 @@ public class JpaMain {
 
 //            em.persist(member);
 
-
+/*
             ///값타입과 불변객체 시작
             Address address = new Address("city", "street", "10000");
 
@@ -359,6 +360,58 @@ public class JpaMain {
             //이렇게 전체 새로생성 + 재세팅 해야함
             Address newAddress = new Address("newCity", address.getStreet(), address.getZipcode());
             member1.setAddress(newAddress);
+
+ */
+
+            /////값타입 컬레션 시작
+            member.setName("컬렉션");
+            member.setAddress(new Address("homeCity", "street1", "zipcode1"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("떡볶이");
+            //1. 실무사용은 위험스. 추적필요없고 값 바껴도 업데이트 필요없을때만 사용
+//            member.getAddresseHistory().add(new Address("old1", "street2", "zipcode2"));
+//            member.getAddresseHistory().add(new Address("old2", "street3", "zipcode3"));
+
+            //2. 값타입을 엔티티로 승급해서(AddressEntity)!! 생성자 생성해서 저장
+            member.getAddresseHistory().add(new AddressEntity("old1", "street2", "zipcode2"));
+            member.getAddresseHistory().add(new AddressEntity("old2", "street3", "zipcode3"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("============START=============");
+            //조회시 멤버만 가져옴. 컬렉션은 다 지연로딩
+            Member findMember = em.find(Member.class, member.getId());
+
+            //레이지라 이때 조회됨
+//            List<Address> addresseHistory = findMember.getAddresseHistory();
+//            for(Address address : addresseHistory){
+//                System.out.println("address = " + address.getCity());
+//            }
+
+            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+            for(String food : favoriteFoods){
+                System.out.println("food = " + food);
+            }
+
+            //수정 : 중요해~
+//            findMember.getAddress().setCity("newCity"); // 이렇게 변경 xxxxxx
+            //완전교체 수정 해야함
+            Address a = findMember.getAddress();
+            findMember.setAddress(new Address("수정City", a.getStreet(), a.getZipcode()));
+
+            //값타입 컬렉션 업데이트 : 변경 발생시 모두 삭제후 재등록됨
+            //단순 String 컬렉션이라 삭제 후 추가해야함
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+
+            //컬렉션 오브렉트 타입. equals 반드시 구현되어있어야함!!
+            findMember.getAddresseHistory().remove(new Address("수정City", a.getStreet(), a.getZipcode()));
+//            findMember.getAddresseHistory().add(new Address("값타입 수정City", a.getStreet(), a.getZipcode()));
 
             tx.commit();
 

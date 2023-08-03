@@ -4,9 +4,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 //@Table(name = "MBR") //다른 테이블 이름 매핑
@@ -87,6 +85,31 @@ public class Member extends BaseEntity{
     @Embedded
     private Address address;
 
+    /*
+   값타입 컬렉션
+   - 값 타입 하나이상 저장할때 사용
+   - @ElementCollection , @CollectionTable
+   - 컬렉션을 힌db안에 넣을수 없기에 별도의 테이블 생성해서 저장됨
+   - 영속성전이, 고아객체 가짐(같이 저장되고 삭제)
+   - 디폴트 지연로딩
+   - 실무에서는 값타입 컬렉션보다 일대다 관계를 고려!!!!
+   * */
+    @ElementCollection
+    @CollectionTable(name="FAVORITE_FOOD"
+            , joinColumns = @JoinColumn(name = "MEMBER_ID"))
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+    //값타입 말고 엔티티로 매핑
+//    @OrderColumn(name = "ADDRESS_ORDER") //사용xx
+//    @ElementCollection
+//    @CollectionTable(name="ADDRESS"
+//            , joinColumns = @JoinColumn(name = "MEMBER_ID"))
+//    private List<Address> addresseHistory = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) //값타입보다 활용도 높아짐!
+    @JoinColumn(name = "MEMBER_ID")
+    private List<AddressEntity> addresseHistory = new ArrayList<>();
+
     @Embedded
     @AttributeOverrides({     //한 엔티티에서 같은값 사용 원할때
      @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
@@ -144,6 +167,31 @@ public class Member extends BaseEntity{
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+
+//    public List<Address> getAddresseHistory() {
+//        return addresseHistory;
+//    }
+//
+//    public void setAddresseHistory(List<Address> addresseHistory) {
+//        this.addresseHistory = addresseHistory;
+//    }
+
+
+    public List<AddressEntity> getAddresseHistory() {
+        return addresseHistory;
+    }
+
+    public void setAddresseHistory(List<AddressEntity> addresseHistory) {
+        this.addresseHistory = addresseHistory;
     }
 
     public void changeTeam(Team team) {
