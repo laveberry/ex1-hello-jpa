@@ -327,11 +327,38 @@ public class JpaMain {
 
             ///임베디드 타입 시작
             Member member = new Member();
-            member.setName("임베디드");
-            member.setAddress(new Address("city", "street", "zipcode"));
-            member.setPeriod(new Period());
+//            member.setName("임베디드");
+//            member.setAddress(new Address("city", "street", "zipcode"));
+//            member.setPeriod(new Period());
 
-            em.persist(member);
+//            em.persist(member);
+
+
+            ///값타입과 불변객체 시작
+            Address address = new Address("city", "street", "10000");
+
+            Member member1 = new Member();
+            member1.setName("member1");
+            member1.setAddress(address);
+
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setName("member2");
+            //엔티티 공유라 값 둘다 변경됨. error : 객체타입은 참조를 전달해서 공유참조는 피할수 없음. 따라서 객체는 불변객체로 만들기
+//            member2.setAddress(address);
+            //이렇게 값을 복사해서 사용하면 하나 변경시 하나만 변경됨
+            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+
+            member2.setAddress(copyAddress);
+            em.persist(member2);
+
+            //불변객체 생성을위해 set 막아두기
+//            member1.getAddress().setCity("newCity");
+
+            //이렇게 전체 새로생성 + 재세팅 해야함
+            Address newAddress = new Address("newCity", address.getStreet(), address.getZipcode());
+            member1.setAddress(newAddress);
 
             tx.commit();
 
