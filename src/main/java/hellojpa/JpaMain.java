@@ -220,32 +220,32 @@ public class JpaMain {
 ////            printMember(member1);
 //            printMemberAndTeam(member1);
 
-            Member member = new Member();
-            member.setName("member1");
-            em.persist(member);
-
-            Member member2 = new Member();
-            member2.setName("member2");
-            em.persist(member2);
-
-            em.flush();
-            em.clear();
-
-            Member m1 = em.find(Member.class, member.getId());
-//            Member m2 = em.find(Member.class, member2.getId());
-            Member m2 = em.getReference(Member.class, member2.getId());
-            //타입비교 : find이용시 true, getReference와 비교시 ture
-            System.out.println("m1 == m2" + (m1.getClass() == m2.getClass()));
+//            Member member = new Member();
+//            member.setName("member1");
+//            em.persist(member);
+//
+//            Member member2 = new Member();
+//            member2.setName("member2");
+//            em.persist(member2);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Member m1 = em.find(Member.class, member.getId());
+////            Member m2 = em.find(Member.class, member2.getId());
+//            Member m2 = em.getReference(Member.class, member2.getId());
+//            //타입비교 : find이용시 true, getReference와 비교시 ture
+//            System.out.println("m1 == m2" + (m1.getClass() == m2.getClass()));
 
             //타입체크 예시 메소드
-            logic(m1, m2);
-
-            //둘다 값 같음
-            System.out.println("m1 = " + m1.getClass());
-            Member reference = em.getReference(Member.class, member.getId());
-            System.out.println("reference = " + reference.getClass());
-            //pk가 같으면 jpa는 항상 트루?
-            System.out.println("a == a : " + (m1 == reference)); //true
+//            logic(m1, m2);
+//
+//            //둘다 값 같음
+//            System.out.println("m1 = " + m1.getClass());
+//            Member reference = em.getReference(Member.class, member.getId());
+//            System.out.println("reference = " + reference.getClass());
+//            //pk가 같으면 jpa는 항상 트루?
+//            System.out.println("a == a : " + (m1 == reference)); //true
 
             //영속성컨텍스트 제거하여, ref 초기화시 에러남.
 //            em.detach(m2);
@@ -254,9 +254,9 @@ public class JpaMain {
 //            System.out.println("프록시 초기화 -> " + m2.getName());
 
             //프록시 초기화여부 확인
-            System.out.println("isLoaded => " + emf.getPersistenceUnitUtil().isLoaded(m2));
-
-            Hibernate.initialize(m2);//강제 초기화
+//            System.out.println("isLoaded => " + emf.getPersistenceUnitUtil().isLoaded(m2));
+//
+//            Hibernate.initialize(m2);//강제 초기화
 
             /*
             getReference 실제 사용시점에서 호출됨.
@@ -269,6 +269,40 @@ public class JpaMain {
 //            System.out.println("after findMember  =>  " + findMember.getClass());
 
             //
+
+            ///즉시로딩과 지연로딩
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setName("member");
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //1. LAZY
+            Member m = em.find(Member.class, member.getId()); //pk찍어서 가져와서 jpa가 최적화 가능
+
+            System.out.println("엠" + m.getId());
+
+            //m.getTeam()은 프록시 가져오는거라 초기화아님
+            System.out.println("m = " + m.getTeam().getClass());
+
+            System.out.println("==================");
+            //지연로딩 세팅시 프록시로 가져옴. 이 시점에서 팀 초기화 됨
+            System.out.println("팀명 ==> " + m.getTeam().getName());;
+            System.out.println("==================");
+
+            //2. EAGER - JPQL 사용시 쿼리 여러번 호출됨
+//            List<Member> members = em.createQuery("select m from Member m", Member.class)
+//                            .getResultList();
+
+            //LAZY 적용후 패치조인으로 해결. 값이 채워져 있어서 루프 돌려도 계속 쿼리 나오지않음
+            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
+                    .getResultList();
 
             tx.commit();
 
