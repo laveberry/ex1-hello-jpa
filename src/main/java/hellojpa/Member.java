@@ -80,6 +80,22 @@ public class Member extends BaseEntity{
     @Transient //db매핑 안하고 메모리에서만 사용
     private int temp;
 
+    //기간
+    @Embedded
+    private Period period;
+
+    @Embedded
+    private Address address;
+
+    @Embedded
+    @AttributeOverrides({     //한 엔티티에서 같은값 사용 원할때
+     @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
+     @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
+     @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
+
+    })
+    private Address workAddress;
+
     //기본 생성자 필요
     public Member() {
     }
@@ -112,6 +128,22 @@ public class Member extends BaseEntity{
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Period period) {
+        this.period = period;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public void changeTeam(Team team) {

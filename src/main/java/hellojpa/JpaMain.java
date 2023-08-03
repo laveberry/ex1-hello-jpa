@@ -269,7 +269,7 @@ public class JpaMain {
 //            System.out.println("after findMember  =>  " + findMember.getClass());
 
             //
-
+/*
             ///즉시로딩과 지연로딩
             Team team = new Team();
             team.setName("TeamA");
@@ -323,6 +323,15 @@ public class JpaMain {
 
             Parent findParent = em.find(Parent.class, parent.getId());
 //            findParent.getChildList().remove(0);
+*/
+
+            ///임베디드 타입 시작
+            Member member = new Member();
+            member.setName("임베디드");
+            member.setAddress(new Address("city", "street", "zipcode"));
+            member.setPeriod(new Period());
+
+            em.persist(member);
 
             tx.commit();
 
