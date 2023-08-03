@@ -304,6 +304,26 @@ public class JpaMain {
             List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
                     .getResultList();
 
+
+
+            ///////#### 영속성전이와 고아객체 #####
+            Child child1 = new Child();
+            Child child2 = new Child();
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+
+            em.persist(parent);
+            //cascade = CascadeType.ALL 로 세팅하면 parent연관된 child도 진행되니 안해줘도됨
+//            em.persist(child1);
+//            em.persist(child2);
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+//            findParent.getChildList().remove(0);
+
             tx.commit();
 
         }catch (Exception e){
